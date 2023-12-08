@@ -1,3 +1,4 @@
+from flask import Flask, render_template, request, jsonify, redirect
 from flask import Flask, jsonify
 from datetime import datetime, timedelta
 import psycopg2
@@ -13,94 +14,40 @@ db_config = {
     'port': '5432',
 }
 
+# Rota principal com formulário de input de datas
+@app.route('/consulta', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        consulta_tipo = request.form['consulta_tipo']
+        data_inicio = request.form['data_inicio']
+        data_fim = request.form['data_fim']
 
-
-# Rota para consultar um protocolo por número
-@app.route('/consulta_protocolo/')
-def consulta_protocolo():
-    try:
-
-        # Conecta ao banco de dados PostgreSQL
+        # Conectar ao banco de dados PostgreSQL
         conn = psycopg2.connect(**db_config)
-
-        # Cria um cursor para executar consultas
         cursor = conn.cursor()
 
-        # Exemplo de consulta filtrando pelo número do protocolo
-        cursor.execute("SELECT codigo, dominio, cadastro, tipo_protocolo FROM protocolo WHERE protocolo_externo is not null and dominio='PROTOCOLO_RI' and cast (cadastro as date) between '2023-11-01' and '2023-11-29'")
-
-        # Obtém os resultados da consulta
+        if consulta_tipo == 'protocolo':
+            query = "SELECT codigo, dominio, cadastro, tipo_protocolo FROM protocolo WHERE protocolo_externo IS NOT NULL AND dominio='PROTOCOLO_RI' AND cast(cadastro as date) BETWEEN %s AND %s"
+        elif consulta_tipo == 'certidao':
+            query = "SELECT codigo, dominio, cadastro, tipo_protocolo FROM protocolo WHERE protocolo_externo IS NOT NULL AND dominio='CERTIDAO_RI' AND status='FINALIZADO' AND cast(cadastro as date) BETWEEN %s AND %s"
+        elif consulta_tipo == 'intimacao':
+            query = "SELECT codigo, dominio, cadastro, tipo_protocolo, numero_controle_externo FROM protocolo WHERE numero_controle_externo IS NOT NULL AND dominio='PROTOCOLO_RI' AND cast(cadastro as date) BETWEEN %s AND %s"
+        
+        cursor.execute(query, (data_inicio, data_fim))
         resultado = cursor.fetchall()
 
-        # Fecha o cursor e a conexão
         cursor.close()
         conn.close()
 
-        # Se o protocolo existir, converte para um formato JSON e o retorna
         if resultado:
-            return jsonify(resultado)
+            return render_template('result-list.html', resultado=resultado)
         else:
-            return jsonify({'mensagem': 'Protocolo não encontrado'}), 404
+            return render-render_template('error.html')
 
-    except Exception as e:
-        return f"Erro na consulta: {str(e)}"
-    
+    valor_DateInicial = datetime.now().date() - timedelta(days=1);
+    valor_DateFinal = datetime.now().date();
 
-@app.route('/consulta_certidao/')
-def consulta_certidao():
-    try:
-        # Conecta ao banco de dados PostgreSQL
-        conn = psycopg2.connect(**db_config)
-
-        # Cria um cursor para executar consultas
-        cursor = conn.cursor()
-
-        # Exemplo de consulta filtrando pelo número da certidão
-        cursor.execute("SELECT codigo, dominio, cadastro, tipo_protocolo FROM protocolo WHERE protocolo_externo is not null and dominio='CERTIDAO_RI' and status='FINALIZADO' and cast (cadastro as date) between '2023-11-01' and '2023-11-15'")
-
-        # Obtém os resultados da consulta
-        resultado = cursor.fetchall()
-
-        # Fecha o cursor e a conexão
-        cursor.close()
-        conn.close()
-
-        # Se o protocolo existir, converte para um formato JSON e o retorna
-        if resultado:
-            return jsonify(resultado)
-        else:
-            return jsonify({'mensagem': 'Protocolo não encontrado'}), 404
-
-    except Exception as e:
-        return f"Erro na consulta: {str(e)}"
-
-@app.route('/consulta_intimacao/')
-def consulta_intimacao():
-    try:
-        # Conecta ao banco de dados PostgreSQL
-        conn = psycopg2.connect(**db_config)
-
-        # Cria um cursor para executar consultas
-        cursor = conn.cursor()
-
-        # Exemplo de consulta filtrando pelo número do protocolo de intimação
-        cursor.execute("SELECT codigo, dominio, cadastro, tipo_protocolo, numero_controle_externo FROM protocolo WHERE numero_controle_externo is not null and dominio='PROTOCOLO_RI' and cast (cadastro as date) between '2023-11-01' and '2023-11-15'")
-
-        # Obtém os resultados da consulta
-        resultado = cursor.fetchall()
-
-        # Fecha o cursor e a conexão
-        cursor.close()
-        conn.close()
-
-        # Se o protocolo existir, converte para um formato JSON e o retorna
-        if resultado:
-            return jsonify(resultado)
-        else:
-            return jsonify({'mensagem': 'Protocolo não encontrado'}), 404
-
-    except Exception as e:
-        return f"Erro na consulta: {str(e)}"    
+    return render_template('index.html', vdi=valor_DateInicial, vdf=valor_DateFinal)
 
 if __name__ == '__main__':
     app.run(debug=True)

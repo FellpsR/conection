@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta Financeiro</title>
+</head>
+<body>
+
+    
+    <h1>Consulta Financeiro SAEC</h1>
+    <form action="/consulta" method="post">
+
+        <div class="logo">
+            <img src="/static/assets/images/logo/logo.svg" alt="logo" width="" height="100">          
+        </div>
+
+        <label for="data_inicio" class="date-color">Data de Início:</label>
+        <input type="date" id="data_inicio" name="data_inicio" value="{{ vdi }}" placeholder="dd/mm/yyyy"  required>
+        
+        <label for="data_fim" class="date-color">Data de Fim:</label>
+        <input type="date" id="data_fim" name="data_fim" value="{{ vdf }}" placeholder="dd/mm/yyyy"  required>
+        
+        <label for="consulta_tipo" class="label-color">Tipo:</label>
+
+        <div class="radio-group" style="text-align: justify;">
+            <input type="radio" id="protocolo" name="consulta_tipo" value="protocolo" required>
+            <label for="protocolo">Protocolo</label>
+            
+            <input type="radio" id="certidao" name="consulta_tipo" value="certidao" required>
+            <label for="certidao">Certidão</label>
+            
+            <input type="radio" id="intimacao" name="consulta_tipo" value="intimacao" required>
+            <label for="intimacao">Intimação</label>
+        </div>
+        <button type="submit">Consultar</button>
+    </form>
+</body>
+</html>
