@@ -6,12 +6,17 @@
     <title>Error 404</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel="stylesheet" href="/static/css/error.css">
+    <link rel="icon" type="image/x-icon" href="/static/assets/images/logo/nova logo.png">
 </head>
 <body>
+    
     <div class="container centralizar">
         <img src="/static/assets/images/pages/error/error.svg" alt="error" width="" height="400">
         <h1>Algo de errado aconteceu...</h1>
-        <p>Por favor, tente novamente mais tarde!</p>
+        <p>Por favor, refaça sua pesquisa ou tente novamente mais tarde!</p>
     </div>
+    <a href=" {{ url_for('index') }} "> <!-- Link retornará à pagina index -->   
+        <button class="return" type="submit">Home</button>
+    </a>
 </body>
 </html>

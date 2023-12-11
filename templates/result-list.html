@@ -1,22 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/result.css">
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta Financeiro</title>
+    <title>Resultados - Consulta Financeiro</title>
+    <link rel="icon" type="image/x-icon" href="/static/assets/images/logo/nova logo.png">
 </head>
 <body>
+    <div class="container">
+        <a href=" {{ url_for('index') }} " class="a"> <!-- Link retornará à pagina index -->
+            <button type="submit" class="btnAction">
+                <img src="/static/assets/images/pages/return/left-arrow.png" alt="Seta Retorno" class="icon">
+            </button>
+        </a>
+    </div>
+    <div class="container">
+        <h1>Resultados da Consulta</h1>
 
-    
-    <h1>Listagem Resultados Financeiro</h1>
-    <form action="/consulta" method="post">
+        <table>
+            <thead>
+                <tr>
+                    <th>Protocolo</th>
+                    <th>Tipo</th>
+                    <th>Cadastro</th>
+                    <th>Nº SAEC</th>
+                    <th>Valor Total</th>
+                    <th>Saldo</th>
+                    <!-- Adicione mais colunas conforme necessário -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in resultado %}
+                    <tr>
+                        <td>{{ row[0] }}</td>
+                        <td>{{ row[1] }}</td>
+                        <td>{{ row[2].strftime('%d/%m/%Y') }}</td>
+                        <td>{{ row[4] }}</td>
+                        <td>R$ {{ row[5] }}</td>
+                        <td>R$ {{ row[6] }}</td>
+                        <!-- Adicione mais colunas conforme necessário -->
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-        <div class="logo">
-            <img src="/static/assets/images/logo/logo.svg" alt="logo" width="" height="100">          
-        </div>
-
-        <button type="submit">Voltar</button>
-    </form>
+        <a href=" {{ url_for('index') }} "> <!-- Link retornará à pagina index -->   
+            <button class="return" type="submit">Voltar</button>
+        </a>        
+    </div>
 </body>
 </html>
