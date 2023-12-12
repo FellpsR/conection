@@ -33,7 +33,7 @@ button {
     border-radius: 4px;
     cursor: pointer;
     width: 100%;
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 button:hover {
@@ -52,4 +52,5 @@ button:hover {
     justify-content: center;
     align-items: center;
     text-align: center;
+    padding: 10px;
 }

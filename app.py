@@ -1,17 +1,23 @@
-from flask import Flask, render_template, request, jsonify, redirect
-from flask import Flask, jsonify
+from flask import Flask, render_template, request
+from decouple import config
 from datetime import datetime, timedelta
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 import psycopg2
 
 app = Flask(__name__)
 
+app.config['SQLALCHEMY_DATABASE_URI'] = config("SQLALCHEMY_DATABASE_URI")
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
 # Configurações do banco de dados PostgreSQL
 db_config = {
-    'host': '192.168.25.37',
-    'database': 'asgard',
-    'user': 'homologacaoUser',
-    'password': 'Cartorio-2024',
-    'port': '5432',
+    'host': config("HOST1"),
+    'database': config("DATABASE1"),
+    'user': config("USER1"),
+    'password': config("PASSWORD1"),
+    'port': config("PORT1"),
 }
 
 # Definindo último dia útil (looping até encontrar o último dia útil)
@@ -20,20 +26,20 @@ def ultimoDiaUtil(data):
         data -= timedelta(days=1)
     return data
 
-
 # Rota principal com formulário de input de datas
-@app.route('/consulta', methods=['GET', 'POST'])
+@app.route("/consulta", methods=["GET", "POST"])
 def index():
-    if request.method == 'POST':
-        data_inicio = request.form['data_inicio']
-        data_fim = request.form['data_fim']
-        consulta_tipo = request.form['consulta_tipo']
+    if request.method == "POST":
+        data_inicio = request.form["data_inicio"]
+        data_fim = request.form["data_fim"]
+        consulta_tipo = request.form["consulta_tipo"]
 
         # Conectar ao banco de dados PostgreSQL
         conn = psycopg2.connect(**db_config)
         cursor = conn.cursor()
 
-        if consulta_tipo == 'protocolo':
+        # Consulta ao banco de dados
+        if consulta_tipo == "protocolo":
             query = "SELECT codigo, dominio, cadastro, tipo_protocolo, protocolo_externo, valor_total, saldo FROM protocolo WHERE protocolo_externo IS NOT NULL AND dominio='PROTOCOLO_RI' AND cast(cadastro as date) BETWEEN %s AND %s"
         elif consulta_tipo == 'certidao':
             query = "SELECT codigo, dominio, cadastro, tipo_protocolo, protocolo_externo, valor_total, saldo FROM protocolo WHERE protocolo_externo IS NOT NULL AND dominio='CERTIDAO_RI' AND status='FINALIZADO' AND cast(cadastro as date) BETWEEN %s AND %s"
@@ -47,14 +53,14 @@ def index():
         conn.close()
 
         if resultado:
-            return render_template('result-list.html', resultado=resultado)
+            return render_template("result-list.html", resultado=resultado)
         else:
-            return render_template('error.html')
+            return render_template("error.html")
 
     valorDateInicial = ultimoDiaUtil(datetime.now().date() - timedelta(days=1));
     valorDateFinal = datetime.now().date();
 
-    return render_template('index.html', vdi=valorDateInicial, vdf=valorDateFinal)
+    return render_template("index.html", vdi=valorDateInicial, vdf=valorDateFinal)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
