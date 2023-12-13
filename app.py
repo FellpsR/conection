@@ -7,7 +7,7 @@ import psycopg2
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = config("SQLALCHEMY_DATABASE_URI")
+app.config['SQLALCHEMY_DATABASE_URI'] = config("DATABASE_ONR")
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
@@ -33,6 +33,10 @@ def index():
         data_inicio = request.form["data_inicio"]
         data_fim = request.form["data_fim"]
         consulta_tipo = request.form["consulta_tipo"]
+
+        if data_inicio > data_fim:
+            error_message = "Data inicial não pode ser maior que a data final."
+            return render_template("index.html", error_message=error_message)
 
         # Conectar ao banco de dados PostgreSQL
         conn = psycopg2.connect(**db_config)
