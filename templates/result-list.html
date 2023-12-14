@@ -34,12 +34,12 @@
             <tbody>
                 {% for row in resultado %}
                     <tr>
-                        <td>{{ row[0] }}</td>
                         <td>{{ row[1] }}</td>
-                        <td>{{ row[2].strftime('%d/%m/%Y') }}</td>
-                        <td>{{ row[4] }}</td>
-                        <td>R$ {{ row[5] }}</td>
+                        <td>{{ row[2] }}</td>
+                        <td>{{ row[3].strftime('%d/%m/%Y') }}</td>
+                        <td>{{ row[5] }}</td>
                         <td>R$ {{ row[6] }}</td>
+                        <td>R$ {{ row[7] }}</td>
                         <!-- Adicione mais colunas conforme necessário -->
                     </tr>
                 {% endfor %}
