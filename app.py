@@ -6,6 +6,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import psycopg2
+import os
+import pandas as pd
 
 app = Flask(__name__)
 
@@ -34,6 +36,20 @@ def ultimoDiaUtil(data):
         data -= timedelta(days=1)
     return data
 
+# #Diretório planilhas ONR
+# diretorio = r"P:\Diversos\0 - Setor Financeiro\13.ONR - RELATÓRIO"
+
+# # Função para ler arquivos da planilha conciliação ONR
+# def ler_arquivos_xls(diretorio):
+#     dados = []
+#     for root, files in os.walk(diretorio):
+#         for file in files:
+#             if file.endswith(".xls"):
+#                 caminho_arquivo = os.path.join(root, file)
+#                 df = pd.read_excel(caminho_arquivo)
+#                 dados.extend(df.values.tolist())
+#     return dados
+
 # Rota principal com formulário de input de datas
 @app.route("/consulta", methods=["GET", "POST"])
 def index():
@@ -52,11 +68,11 @@ def index():
 
         # Consulta ao banco de dados
         if consulta_tipo == "protocolo":
-            query = "SELECT id, codigo, dominio, cadastro, tipo_protocolo, protocolo_externo, valor_total, saldo FROM protocolo WHERE protocolo_externo IS NOT NULL AND dominio='PROTOCOLO_RI' AND cast(cadastro as date) BETWEEN %s AND %s"
+            query = "SELECT id, codigo, dominio, status, cadastro, protocolo_externo, valor_total, saldo FROM protocolo WHERE protocolo_externo IS NOT NULL AND protocolo_externo <> '' AND dominio='PROTOCOLO_RI' AND cast(cadastro as date) BETWEEN %s AND %s"
         elif consulta_tipo == 'certidao':
-            query = "SELECT id, codigo, dominio, cadastro, tipo_protocolo, protocolo_externo, valor_total, saldo FROM protocolo WHERE protocolo_externo IS NOT NULL AND dominio='CERTIDAO_RI' AND status='FINALIZADO' AND cast(cadastro as date) BETWEEN %s AND %s"
+            query = "SELECT id, codigo, dominio, status, cadastro, protocolo_externo, valor_total, saldo FROM protocolo WHERE protocolo_externo IS NOT NULL AND protocolo_externo <> '' AND dominio='CERTIDAO_RI' AND status='FINALIZADO' AND cast(cadastro as date) BETWEEN %s AND %s"
         elif consulta_tipo == 'intimacao':
-            query = "SELECT id, codigo, dominio, cadastro, tipo_protocolo, numero_controle_externo, valor_total, saldo FROM protocolo WHERE numero_controle_externo IS NOT NULL AND dominio='PROTOCOLO_RI' AND cast(cadastro as date) BETWEEN %s AND %s"
+            query = "SELECT id, codigo, dominio, status, cadastro, numero_controle_externo, valor_total, saldo FROM protocolo WHERE numero_controle_externo IS NOT NULL AND numero_controle_externo <> '' AND dominio='PROTOCOLO_RI' AND cast(cadastro as date) BETWEEN %s AND %s"
         
         cursor.execute(query, (data_inicio, data_fim))
         resultado = cursor.fetchall()
@@ -80,13 +96,17 @@ def index():
 
                 #Se não constar, insere no banco de dados
                 if not existing_record:
-                    
-                    #Format da data padrão internacional para BR
-                    formatted_data = protocolo[3].strftime('%d/%m/%Y %H:%M:%S')
                                                        
-                    query = "INSERT INTO protocolo_asgard (id, protocolo, tipo, cadastro, saec, valor_total, saldo) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-                    values = (protocolo[0], protocolo[1], protocolo[2], formatted_data, protocolo [5], protocolo[6], protocolo [7])
+                    query = "INSERT INTO protocolo_asgard (id, protocolo, tipo, status, cadastro, saec, valor_total, saldo) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                    values = (protocolo[0], protocolo[1], protocolo[2], protocolo[3], protocolo[4], protocolo [5], protocolo[6], protocolo[7])
 
+                    cursor.execute(query, values)
+
+                #Se já constar no banco de dados, atualiza os campos passíveis de atualização
+                else:
+                    query = "UPDATE protocolo_asgard SET status = %s, valor_total = %s, saldo = %s WHERE protocolo = %s"
+                    values = (protocolo[3], protocolo[6], protocolo[7], protocolo[1])
+                    
                     cursor.execute(query, values)
 
             try:

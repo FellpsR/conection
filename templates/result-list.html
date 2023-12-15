@@ -24,6 +24,7 @@
                 <tr>
                     <th>Protocolo</th>
                     <th>Tipo</th>
+                    <th>Status</th>
                     <th>Cadastro</th>
                     <th>Nº SAEC</th>
                     <th>Valor Total</th>
@@ -36,7 +37,8 @@
                     <tr>
                         <td>{{ row[1] }}</td>
                         <td>{{ row[2] }}</td>
-                        <td>{{ row[3].strftime('%d/%m/%Y') }}</td>
+                        <td>{{ row[3] }}</td>
+                        <td>{{ row[4].strftime('%d/%m/%Y') }}</td>
                         <td>{{ row[5] }}</td>
                         <td>R$ {{ row[6] }}</td>
                         <td>R$ {{ row[7] }}</td>

@@ -24,6 +24,7 @@ def upgrade() -> None:
     sa.Column('id', sa.UUID(), autoincrement=False, nullable=False),
     sa.Column('protocolo', sa.BIGINT, autoincrement=False, nullable=False),
     sa.Column('tipo', sa.VARCHAR(length=255), autoincrement=False, nullable=False),
+    sa.Column('status', sa.VARCHAR(length=255), autoincrement=False, nullable=True),
     sa.Column('cadastro', postgresql.TIMESTAMP(), autoincrement=False, nullable=True),
     sa.Column('saec', sa.VARCHAR(length=255), autoincrement=False, nullable=False),
     sa.Column('valor_total', sa.NUMERIC(), autoincrement=False, nullable=True),
