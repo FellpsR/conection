@@ -1,1 +1,3 @@
+<text align = justify>
 A solução basicamente funciona sendo uma API em Python que lerá informações do BD de Backup do sistema Asgard que é utilizado na Serventia Extrajudicial, retornando tais informações, salvando no BD Finance que é o principal da nossa aplicação, onde já consta informações salvas da planilha de repasses da plataforma ONR. Assim, com as "planilhas" de dados no BD Finance, terá uma comparação entre as duas em campos específicos, resultando na conciliação dos valores. A solução terá validações de data, número de controle externo, protocolo ONR, duplicidade de lançamento, etc.
+</text>
