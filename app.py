@@ -36,20 +36,6 @@ def ultimoDiaUtil(data):
         data -= timedelta(days=1)
     return data
 
-# #Diretório planilhas ONR
-# diretorio = r"P:\Diversos\0 - Setor Financeiro\13.ONR - RELATÓRIO"
-
-# # Função para ler arquivos da planilha conciliação ONR
-# def ler_arquivos_xls(diretorio):
-#     dados = []
-#     for root, files in os.walk(diretorio):
-#         for file in files:
-#             if file.endswith(".xls"):
-#                 caminho_arquivo = os.path.join(root, file)
-#                 df = pd.read_excel(caminho_arquivo)
-#                 dados.extend(df.values.tolist())
-#     return dados
-
 # Rota principal com formulário de input de datas
 @app.route("/consulta", methods=["GET", "POST"])
 def index():
@@ -58,6 +44,7 @@ def index():
         data_fim = request.form["data_fim"]
         consulta_tipo = request.form["consulta_tipo"]
 
+        # Verificação tratativa de datas no input Inicial menor que a data final
         if data_inicio > data_fim:
             error_message = "Data inicial não pode ser maior que a data final."
             return render_template("index.html", error_message=error_message)
@@ -66,7 +53,7 @@ def index():
         conn = psycopg2.connect(**db_config)
         cursor = conn.cursor()
 
-        # Consulta ao banco de dados
+        # Consulta ao banco de dados Asgard
         if consulta_tipo == "protocolo":
             query = "SELECT id, codigo, dominio, status, cadastro, protocolo_externo, valor_total, saldo FROM protocolo WHERE protocolo_externo IS NOT NULL AND protocolo_externo <> '' AND dominio='PROTOCOLO_RI' AND cast(cadastro as date) BETWEEN %s AND %s"
         elif consulta_tipo == 'certidao':
@@ -79,18 +66,66 @@ def index():
 
         cursor.close()
         conn.close()
-   
+        
+        #Função para consultar dados da pasta
+        def listar_arquivos_em_diretorio():
+            try:
+                # Use a função listdir para obter a lista de arquivos no diretório
+                arquivos = os.listdir(config("caminhoDiretorio"))
+                
+                year_start = int(data_inicio[1:4])
+                month_start = int(data_inicio[5:7])                
+                print(month_start, year_start)
+
+                year_end = int(data_fim[1:4])
+                month_end = int(data_fim[5:7])
+                print(month_end, year_end)
+
+                #Set resultado inicial como vazio
+                resultado_filtro = []
+
+                #Iterador sobre os anos e meses para filtrar as pastas dos arquivos
+                while year_start <= year_end or (year_start == year_end and month_start <= month_end):
+                    # Filtra os arquivos pelo ano e mês correntes
+                    resultado_filtro = [arquivo for arquivo in arquivos if str(year_start) in arquivo] + resultado_filtro
+                    
+
+                    # Atualiza o ano e mês para a próxima iteração
+                    if month_start == 12:
+                        year_start += 1
+                        month_start = 1
+                    else:
+                        month_start += 1 
+
+                return resultado_filtro      
+
+            except Exception as e:
+                print(f"Erro ao listar arquivos: {e}")
+                return []     
+
+
+        #Função para ler os arquivos da pasta
+        arquivos_pasta = listar_arquivos_em_diretorio()
+
+        #Função para Printar quais são os arquivos na pasta
+        if arquivos_pasta:
+            print("Arquivos encontrados")
+            for arquivo in arquivos_pasta:
+                print(arquivo)
+        else:
+            print("Nenhum arquivo encontrado")
+     
+
+        #Retornará os resultados da consulta caso         
         if resultado:
             
-            # Substitua 'user', 'password', 'host', 'port', 'database' pelos seus próprios detalhes de conexão PostgreSQL
+            #Detalhes de conexão PostgreSQL
             conn = psycopg2.connect(config("DATABASE_ONR"))
             cursor = conn.cursor()
-
-            # Substitua 'pessoas' pelo nome da sua tabela e 'nome', 'idade' pelos campos correspondentes
             
             for protocolo in resultado:
 
-                #Verificação se ja consta no banco de dados
+                #Verificação se já consta no banco de dados
                 cursor.execute("SELECT id FROM protocolo_asgard WHERE protocolo = %s", (protocolo[1],))
                 existing_record = cursor.fetchone()
 
