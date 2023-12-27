@@ -1,5 +1,7 @@
+/* Importação da fonte */
 @import url("https://use.typekit.net/ivl8wxs.css");
 
+/* Estilo global para o corpo da página */
 body {
     background-color: #f8f8f8;
     padding: 20px;
@@ -10,12 +12,14 @@ body {
     font-style: normal;
 }
 
+/* Zerando margens e preenchimentos para elementos específicos */
 body, h1, h2, p, table {
     margin: 0;
     padding: 0;
     margin-top: 25px;
 }
 
+/* Estilo para cabeçalho h1 */
 h1 {
     color: #c70039;
     margin-top: -20px;
@@ -27,6 +31,7 @@ h1 {
     text-align: center;
 }
 
+/* Estilo para botões */
 button {
     background-color: #c70039;
     color: #fff;
@@ -37,16 +42,19 @@ button {
     width: 100%;
 }
 
+/* Efeito de hover para botões */
 button:hover {
     background-color: #950031;
 }
 
+/* Estilo para lista de resultados */
 .result-list {
     list-style-type: none;
     padding: 0;
     margin-top: 0px;
 }
 
+/* Estilo para itens da lista de resultados */
 .result-item {
     margin-bottom: 10px;
     padding: 10px;
@@ -54,9 +62,7 @@ button:hover {
     border-radius: 5px;
 }
 
-
 /* Reset de estilos para garantir consistência entre navegadores */
-
 .container {
     max-width: 800px;
     margin: 0 auto;
@@ -64,17 +70,16 @@ button:hover {
     margin-top: 0px;
 }
 
+/* Estilo para tabela */
 table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
 }
 
-table, th, td {
-    border: 1px solid #ddd;
-}
-
+/* Estilo para células da tabela */
 th, td {
+    border: 1px solid #ddd;
     padding: 12px;
     text-align: left;
     align-items: center;
@@ -82,6 +87,7 @@ th, td {
     text-align: center;
 }
 
+/* Estilo para cabeçalho da tabela */
 th {
     background-color: #f2f2f2;
 }
@@ -90,21 +96,27 @@ th {
     background-color: rgba(255, 255, 255, 0);
     border-radius: 100%;
     cursor: pointer;
-    font-size: 2px;
+    font-size: inherit; /* Mantenha o tamanho de fonte padrão */
     display: flex;
     justify-content: center;
     align-items: center;
     width: 50px;
     height: 50px;
-    transition: all 0.3s ease-in-out;
+    transition: background-color 0.3s ease-in-out; /* Adicione transição para background-color */
 }
 
-.icon {
-    width: 50px;
-    height: 50px;
+/* Remova a regra de hover do ícone do botão e adicione ao botão principal */
+.btnAction:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.btnAction .icon {
+    width: 100%;
+    height: 100%;
     background-color: rgba(255, 255, 255, 0);
+    transition: filter 0.3s ease-in-out; /* Adicione transição para o filtro do ícone */
 }
 
-button:hover .icon {
+.btnAction:hover .icon {
     filter: invert(100%);
 }

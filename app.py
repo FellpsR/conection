@@ -23,18 +23,12 @@ db_config = {
     'port': config("PORT1"),
 }
 
-# DATABASE_URL = "sqlite:///./test.db"
-
-# engine = create_engine(DATABASE_URL)
-# SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-# Base = declarative_base()
-
-
 # Definindo último dia útil (looping até encontrar o último dia útil)
 def ultimoDiaUtil(data):
     while data.weekday() >= 5: # 5 = sábado, 6 = domingo
         data -= timedelta(days=1)
     return data
+
 
 # Rota principal com formulário de input de datas
 @app.route("/consulta", methods=["GET", "POST"])
@@ -43,7 +37,7 @@ def index():
         data_inicio = request.form["data_inicio"]
         data_fim = request.form["data_fim"]
         consulta_tipo = request.form["consulta_tipo"]
-
+       
         # Verificação tratativa de datas no input Inicial menor que a data final
         if data_inicio > data_fim:
             error_message = "Data inicial não pode ser maior que a data final."
@@ -60,8 +54,8 @@ def index():
             query = "SELECT id, codigo, dominio, status, cadastro, protocolo_externo, valor_total, saldo FROM protocolo WHERE protocolo_externo IS NOT NULL AND protocolo_externo <> '' AND dominio='CERTIDAO_RI' AND status='FINALIZADO' AND cast(cadastro as date) BETWEEN %s AND %s"
         elif consulta_tipo == 'intimacao':
             query = "SELECT id, codigo, dominio, status, cadastro, numero_controle_externo, valor_total, saldo FROM protocolo WHERE numero_controle_externo IS NOT NULL AND numero_controle_externo <> '' AND dominio='PROTOCOLO_RI' AND cast(cadastro as date) BETWEEN %s AND %s"
-        # elif consulta_tipo == 'pesquisa_qualificada':
-        #     query = "SELECT id, codigo, dominio, status, cadastro, numero_controle_externo, valor_total, saldo FROM protocolo WHERE numero_controle_externo IS NOT NULL AND numero_controle_externo <> '' AND dominio='PROTOCOLO_RI' AND cast(cadastro as date) BETWEEN %s AND %s"
+        elif consulta_tipo == 'pesquisa_qualificada':
+            query = "SELECT id, codigo, dominio, status, cadastro, protocolo_externo, valor_total, saldo FROM protocolo WHERE protocolo_externo IS NOT NULL AND protocolo_externo <> '' AND dominio='CERTIDAO_RI' AND status='FINALIZADO' AND cast(cadastro as date) BETWEEN %s AND %s"
         
         cursor.execute(query, (data_inicio, data_fim))
         resultado = cursor.fetchall()
@@ -70,63 +64,34 @@ def index():
         conn.close()
         
         #Função para consultar dados da pasta local
-        def listar_arquivos_em_diretorio():
+        def listar_arquivos_com_extensao_recursivamente(diretorio, extensao):
+
             try:
                 # Use a função listdir para obter a lista de arquivos no diretório
-                arquivos = os.listdir(config("caminhoDiretorio"))
-                diretorio_inicial = config("caminhoDiretorio")
-                extensao_desejada = '.xls'
-                
-                year_start = int(data_inicio[1:4])
-                month_start = int(data_inicio[5:7])                
-                print(month_start, year_start)
-
-                year_end = int(data_fim[1:4])
-                month_end = int(data_fim[5:7])
-                print(month_end, year_end)
-
-                #Set resultado inicial como vazio
-                resultado_filtro = []
-                #Set lista de arquivos como vazio
                 lista_arquivos = []
-
-                #Iterador sobre os anos e meses para filtrar as pastas dos arquivos
-                while year_start <= year_end or (year_start == year_end and month_start <= month_end):
-                    # Filtra os arquivos pelo ano e mês correntes
-                    resultado_filtro = [arquivo for arquivo in arquivos if str(year_start) in arquivo] + resultado_filtro
+                
+                for nome_arquivo in os.listdir(diretorio):
+                    caminho_completo = os.path.join(diretorio, nome_arquivo)
+                    if os.path.isfile(caminho_completo) and nome_arquivo.endswith(extensao):
+                        lista_arquivos.append(caminho_completo)
+                    elif os.path.isdir(caminho_completo):
+                        lista_arquivos.extend(listar_arquivos_com_extensao_recursivamente(caminho_completo, extensao))
+                return lista_arquivos
                     
-                    for nome_arquivo in os.listdir():
-                        caminho_completo = os.path.join(nome_arquivo)
-                        if os.path.isfile(caminho_completo) and nome_arquivo.endswith(extensao_desejada):
-                            lista_arquivos.append(caminho_completo)
-                        elif os.path.isdir(caminho_completo):
-                            lista_arquivos.extend(listar_arquivos_em_diretorio(diretorio_inicial, extensao_desejada))
-
-                    # Atualiza o ano e mês para a próxima iteração
-                    if month_start == 12:
-                        year_start += 1
-                        month_start = 1
-                    else:
-                        month_start += 1 
-
-                return resultado_filtro, lista_arquivos      
 
             except Exception as e:
                 print(f"Erro ao listar arquivos: {e}")
-                return []     
+                return []
+   
+        diretorio_inicial = config('caminhoDiretorio')
+        extensao_desejada = '.xls'
 
         #Função para ler os arquivos da pasta
-        arquivos = listar_arquivos_em_diretorio()
+        arquivos = listar_arquivos_com_extensao_recursivamente(diretorio_inicial, extensao_desejada)
 
-        #Função para Printar quais são os arquivos na pasta
-        if arquivos:
-            print("Arquivos encontrados")
-            for arquivo in arquivos:
-                print(arquivo)
-                print(arquivos.__len__())
-        else:
-            print("Nenhum arquivo encontrado")
-     
+        print(arquivos)
+        print(f'Tamanho Resultados: {len(arquivos)}')
+             
 
         #Retornará os resultados da consulta caso         
         if resultado:

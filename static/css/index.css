@@ -1,5 +1,7 @@
+/* Importação da fonte */
 @import url("https://use.typekit.net/ivl8wxs.css");
 
+/* Estilo para o corpo da página */
 body {
     background-color: #f8f8f8;
     color: #c70039;
@@ -12,9 +14,9 @@ body {
     margin: 0;
     font-weight: 400;
     font-style: normal;
-
 }
 
+/* Estilo para cabeçalhos h1 */
 h1 {
     color: #c70039;
     margin-bottom: 30px;
@@ -26,28 +28,36 @@ form {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 300px;
+    width: 400px;
 }
 
+/* Estilo para rótulos */
 label {
     display: block;
     margin-bottom: 8px;
 }
 
+/* Estilo para input de data */
 input[type="date"] {
     width: 100%;
     padding: 8px;
     margin-bottom: 16px;
     box-sizing: border-box;
-    
+    align-items: center;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-weight: bold;
 }
 
+/* Estilo para botões de rádio */
 input[type="radio"] {
     margin-right: 4px;
     margin-top: 0px;
     cursor: pointer;
 }
 
+/* Estilo para botões */
 button {
     background-color: #c70039;
     color: #fff;
@@ -58,14 +68,18 @@ button {
     width: 100%;
 }
 
+/* Efeito de hover para botões */
 button:hover {
     background-color: #950031;
+    transition : 0.2s ease-in-out; /* Adicionando efeito de transição */
 }
 
+/* Estilo para rótulos com cor específica */
 .label-color {
     color: #000000;
 }
 
+/* Estilo para grupo de botões de rádio */
 .radio-group {
     color: #950031;
     display: flex;
@@ -73,34 +87,39 @@ button:hover {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    margin-top: 20px;    
+    margin-top: 20px;
 }
 
+/* Estilo para rótulos dentro do grupo de botões de rádio */
 .radio-group label {
     margin: 0;
     padding: 0;
     font-weight: 500;
 }
 
+/* Estilo para rótulos com cor específica */
 .date-color {
     color: #000000;
-    
+    font-weight:600;
 }
 
-.logo { 
+/* Estilo para a logo */
+.logo {
     height: 100px;
     margin-bottom: 25px;
     padding-bottom: 10px;
     margin-top: 10px;
     text-align: center;
-    border-bottom:#8a1913b2 solid 1px;
+    border-bottom: #8a1913b2 solid 1px;
 }
 
+/* Estilo para lista de resultados */
 .result-list {
     list-style-type: none;
     padding: 0;
 }
 
+/* Estilo para itens da lista de resultados */
 .result-item {
     margin-bottom: 10px;
     padding: 10px;
@@ -108,6 +127,7 @@ button:hover {
     border-radius: 5px;
 }
 
+/* Estilo para mensagens de erro */
 .error-message {
     color: red;
     margin-bottom: 20px;

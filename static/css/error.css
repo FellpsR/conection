@@ -1,3 +1,4 @@
+/* Estilo para o corpo da página */
 body {
     background-color: #f8f8f8;
     color: #c70039;
@@ -10,21 +11,22 @@ body {
     margin: 0;
     font-weight: 400;
     font-style: normal;
-
 }
 
+/* Estilo para cabeçalhos h1 */
 h1 {
     color: #c70039;
     margin-bottom: 10px;
     text-align: center;
 }
 
+/* Estilo para parágrafos */
 p {
     margin-bottom: 20px;
     text-align: center;
-
 }
 
+/* Estilo para botões */
 button {
     background-color: #c70039;
     color: #fff;
@@ -36,21 +38,25 @@ button {
     margin-top: 10px;
 }
 
+/* Efeito de hover para botões */
 button:hover {
     background-color: #950031;
+    transition : 0.2s ease-in-out; /* Adicionando efeito de transição */
+
 }
 
-.error { 
+/* Estilo para mensagens de erro */
+.error {
     height: 100px;
     margin-top: 10px;
     text-align: center;
 }
 
+/* Estilo para elementos centralizados */
 .centralizar {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 10px;
 }
