@@ -43,9 +43,6 @@ $ git clone <https://github.com/FellpsR/conection>
 # Acesse a pasta do projeto no terminal/cmd
 $ cd conection
 
-# Vá para a pasta server
-$ cd server
-
 # Instale os pacotes:
 $ pip install flask
 $ pip install python-decouple
