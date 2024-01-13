@@ -35,7 +35,7 @@ def upgrade() -> None:
     sa.Column('id', sa.UUID(), autoincrement=False, nullable=False),
     sa.Column('data_cadastro', postgresql.TIMESTAMP(), autoincrement=False, nullable=False),
     sa.Column('data_resposta', postgresql.TIMESTAMP(), autoincrement=False, nullable=True),
-    sa.Column('saec', sa.VARCHAR(length=255), autoincrement=False, nullable=False),
+    sa.Column('protocolo_saec', sa.VARCHAR(length=255), autoincrement=False, nullable=False),
     sa.Column('valor', sa.NUMERIC(), autoincrement=False, nullable=True),
     sa.PrimaryKeyConstraint('id', name='protocolo_onr_pkey')
     )
