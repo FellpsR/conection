@@ -87,6 +87,16 @@ th, td {
     text-align: center;
 }
 
+td {
+    white-space: nowrap; /* Impede a quebra de linha dentro da célula */
+    word-break: break-all; /* Quebra a palavra quando passar da largura da célula */
+}
+
+td.quebra_linha {
+    white-space: normal; /* Permite a quebra de linha dentro da célula */
+}
+
+
 /* Estilo para cabeçalho da tabela */
 th {
     background-color: #f2f2f2;

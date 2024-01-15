@@ -85,57 +85,58 @@ def index():
 
         # Retornar os resultados da consulta à planilha
         if resultado:
-            conn = psycopg2.connect(config("DATABASE_ONR"))
-            cursor = conn.cursor()
-
-            # Criar um DataFrame vazio para armazenar dados consolidados de todos os arquivos
-            df_consolidado = pd.DataFrame()
-
-            for arquivo in arquivos:
-                # Usar o pandas para ler os arquivos XLS
-                df_arquivo = pd.read_excel(arquivo)
-               
-                # Criar um DataFrame temporário para armazenar os dados do arquivo atual
-                df_temp = df_arquivo.copy()
-
-                # Remover as colunas específicas da tabela consolidada
-                remover_coluna = ['Unnamed: 0', 'Unnamed: 1', 'Unnamed: 3', 'Unnamed: 5', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 12', 'Unnamed: 15', 'Unnamed: 16', 'Unnamed: 17', 'Unnamed: 20', 'Unnamed: 21', 'Unnamed: 23']
-
-                # Remover linhas e colunas que contêm valores NaN
-                df_temp = df_temp.drop(columns=remover_coluna)
-                df_temp = df_temp.drop(index=range(0,7))
-                df_temp = df_temp.dropna(axis=1, how='all')
-                df_temp = df_temp.where(pd.notna(df_temp), None)
-
-                # Concatenar o DataFrame atual com o DataFrame consolidado
-                df_consolidado = pd.concat([df_consolidado, df_temp], ignore_index=True)
-
-            
-            # Adicionar dados ao banco de dados
-            for _, row in df_consolidado.iterrows():
-
-                #Gerar um UUID aleatório
-                id_aleatorio = str(uuid.uuid4())
-                data_importacao = datetime.now()
-
-                #Verificar se o protocolo já existe no banco de dados
-                query = "SET datestyle = dmy; SELECT id FROM protocolo_onr WHERE data_cadastro = %s AND protocolo_saec = %s order by data_cadastro asc" 
-                values = (row.iloc[0], row.iloc[2],)
-                cursor.execute(query, values)
-                df_exist_record = cursor.fetchone()
-
-
-                # Se não existir, inserir no banco de dados
-                if not df_exist_record:
-                    query = "SET datestyle = dmy; INSERT INTO protocolo_onr (id, data_cadastro, data_resposta, data_importacao, protocolo_saec, valor) VALUES (%s, %s, %s, %s, %s, %s)"
-                    values = (id_aleatorio, row.iloc[0], row.iloc[1], data_importacao, row.iloc[2], row.iloc[3])
-                    cursor.execute(query, values)
-
-
-
             try:
-                # Commitar as mudanças no banco de dados
-                conn.commit()
+                conn = psycopg2.connect(config("DATABASE_ONR"))
+                cursor = conn.cursor()
+
+                # Criar um DataFrame vazio para armazenar dados consolidados de todos os arquivos
+                df_consolidado = pd.DataFrame()
+
+                for arquivo in arquivos:
+                    # Usar o pandas para ler os arquivos XLS
+                    df_arquivo = pd.read_excel(arquivo)
+                
+                    # Criar um DataFrame temporário para armazenar os dados do arquivo atual
+                    df_temp = df_arquivo.copy()
+
+                    # Remover as colunas específicas da tabela consolidada
+                    remover_coluna = ['Unnamed: 0', 'Unnamed: 1', 'Unnamed: 3', 'Unnamed: 5', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 12', 'Unnamed: 15', 'Unnamed: 16', 'Unnamed: 17', 'Unnamed: 20', 'Unnamed: 21', 'Unnamed: 23']
+
+                    # Remover linhas e colunas que contêm valores NaN
+                    df_temp = df_temp.drop(columns=remover_coluna)
+                    df_temp = df_temp.drop(index=range(0,7))
+                    df_temp = df_temp.dropna(axis=1, how='all')
+                    df_temp = df_temp.where(pd.notna(df_temp), None)
+
+                    # Concatenar o DataFrame atual com o DataFrame consolidado
+                    df_consolidado = pd.concat([df_consolidado, df_temp], ignore_index=True)
+
+                
+                # Adicionar dados ao banco de dados
+                for _, row in df_consolidado.iterrows():
+
+                    #Gerar um UUID aleatório
+                    id_aleatorio = str(uuid.uuid4())
+                    data_importacao = datetime.now()
+
+                    #Verificar se o protocolo já existe no banco de dados
+                    query = "SET datestyle = dmy; SELECT id FROM protocolo_onr WHERE data_cadastro = %s AND protocolo_saec = %s order by data_cadastro asc" 
+                    values = (row.iloc[0], row.iloc[2],)
+                    cursor.execute(query, values)
+                    df_exist_record = cursor.fetchone()
+
+
+                    # Se não existir, inserir no banco de dados
+                    if not df_exist_record:
+                        query = "SET datestyle = dmy; INSERT INTO protocolo_onr (id, data_cadastro, data_resposta, data_importacao, protocolo_saec, valor, confirmado) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                        values = (id_aleatorio, row.iloc[0], row.iloc[1], data_importacao, row.iloc[2], row.iloc[3], False)
+                        cursor.execute(query, values)
+
+
+
+                
+                    # Commitar as mudanças no banco de dados
+                    conn.commit()
             except Exception as e:
                 print(f"Erro durante a inserção: {e}")
                 # Fazer rollback em caso de erro
@@ -143,32 +144,31 @@ def index():
 
             # Retornar os resultados da consulta
             for protocolo in resultado:
-                # Verificar se o protocolo já existe protocolo_asgard
-                query = "SELECT id FROM protocolo_asgard WHERE protocolo = %s"
-                values = (protocolo[1],)
-                cursor.execute(query, values)
-                existing_record = cursor.fetchone()
-
-                # Se não existir, inserir no banco de dados
-                if not existing_record:
-                    query = "INSERT INTO protocolo_asgard (id, protocolo, tipo, status, cadastro, saec, valor_total, saldo) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                    values = (protocolo[0], protocolo[1], protocolo[2], protocolo[3], protocolo[4], protocolo[5], protocolo[6], protocolo[7])
+                try:
+                    # Verificar se o protocolo já existe protocolo_asgard
+                    query = "SELECT id FROM protocolo_asgard WHERE protocolo = %s"
+                    values = (protocolo[1],)
                     cursor.execute(query, values)
+                    existing_record = cursor.fetchone()
 
-                    
-                # Se existir, atualizar os campos passíveis de atualização
-                else:
-                    query = "UPDATE protocolo_asgard SET status = %s, valor_total = %s, saldo = %s WHERE protocolo = %s"
-                    values = (protocolo[3], protocolo[6], protocolo[7], protocolo[1])
-                    cursor.execute(query, values)
-                    
+                    # Se não existir, inserir no banco de dados
+                    if not existing_record:
+                        query = "INSERT INTO protocolo_asgard (id, protocolo, tipo, status, cadastro, saec, valor_total, saldo, confirmado) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                        values = (protocolo[0], protocolo[1], protocolo[2], protocolo[3], protocolo[4], protocolo[5], protocolo[6], protocolo[7], False)
+                        cursor.execute(query, values)
 
-            try:
-                # Commitar as mudanças no banco de dados
-                conn.commit()
-            except Exception as e:
-                print(f"Erro durante a inserção: {e}")
-                # Fazer rollback em caso de erro
+                        
+                    # Se existir, atualizar os campos passíveis de atualização
+                    else:
+                        query = "UPDATE protocolo_asgard SET status = %s, valor_total = %s, saldo = %s WHERE protocolo = %s"
+                        values = (protocolo[3], protocolo[6], protocolo[7], protocolo[1])
+                        cursor.execute(query, values)
+                        
+                    # Commitar as mudanças no banco de dados
+                    conn.commit()
+                except Exception as e:
+                    print(f"Erro durante a inserção: {e}")
+                    # Fazer rollback em caso de erro
 
             # Feche a conexão com o banco de dados
             cursor.close()

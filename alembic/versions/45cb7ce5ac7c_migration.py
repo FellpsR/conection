@@ -29,6 +29,7 @@ def upgrade() -> None:
     sa.Column('saec', sa.VARCHAR(length=255), autoincrement=False, nullable=False),
     sa.Column('valor_total', sa.NUMERIC(), autoincrement=False, nullable=True),
     sa.Column('saldo', sa.NUMERIC(), autoincrement=False, nullable=True),
+    sa.Column('confirmado', sa.Boolean(), autoincrement=False, nullable=False),
     sa.PrimaryKeyConstraint('id', name='protocolo_asgard_pkey')
     )
     op.create_table('protocolo_onr',
@@ -38,6 +39,7 @@ def upgrade() -> None:
     sa.Column('data_importacao', postgresql.TIMESTAMP(), autoincrement=False, nullable=False),
     sa.Column('protocolo_saec', sa.VARCHAR(length=255), autoincrement=False, nullable=False),
     sa.Column('valor', sa.NUMERIC(), autoincrement=False, nullable=True),
+    sa.Column('confirmado', sa.Boolean(), autoincrement=False, nullable=False),
     sa.PrimaryKeyConstraint('id', name='protocolo_onr_pkey')
     )
     # ### end Alembic commands ###
