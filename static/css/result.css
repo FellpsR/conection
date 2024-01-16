@@ -85,6 +85,8 @@ th, td {
     align-items: center;
     justify-content: center;
     text-align: center;
+    white-space: nowrap; /* Impede a quebra de linha dentro da célula */
+    word-break: break-all; /* Quebra a palavra quando passar da largura da célula */
 }
 
 td {
