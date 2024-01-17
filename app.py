@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from flask import jsonify
 import psycopg2
 import os
 import pandas as pd
@@ -212,6 +213,47 @@ def lista_arquivos_com_extensao_e_datas(diretorio, extensao, data_inicio, data_f
         print(f"Erro ao listar arquivos: {e}")
         return []
      
+@app.route("/conciliar", methods=["POST"])
+def conciliar():
+    try:
+        #Obtenha os dados da tabela resultados a serem conciliados
+        confirmados = request.form.getlist("confirmado[]")
+
+        print(confirmados)
+
+        #Conecta ao Banco de Dados
+        conn = psycopg2.connect(config("DATABASE_ONR"))
+        cursor = conn.cursor()
+
+        for confirmado in confirmados:
+            #Consulta campos no Banco de dados Finance
+            query_onr = "SELECT * FROM protocolo_onr WHERE confirmado = %s"
+            cursor.execute(query_onr, (confirmado,))
+            protocolo_conciliado = cursor.fetchone()
+
+            if protocolo_conciliado:
+                #Insere os dados na tabela do Asgard
+                query_asgard = "UPDATE protocolo_asgard SET confirmado = %s WHERE True = %s"
+                values_asgard = (True)
+
+                cursor.execute(query_asgard, values_asgard)
+
+                #Insere os dados na tabela do ONR
+                query_onr = "UPDATE protocolo_onr SET confirmado = %s WHERE True = %s"
+                values_onr = (True)
+
+                cursor.execute(query_onr, values_onr)
+
+        #Commita as mudanças no Banco de Dados
+        conn.commit()
+
+        return jsonify({"success": True, "message": "Conciliação realizada com sucesso."})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
+    finally:
+        # Fechar a conexão com o banco de dados
+        cursor.close()
+        conn.close()
 
 if __name__ == "__main__":
     app.run(debug=True)

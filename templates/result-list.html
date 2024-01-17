@@ -48,6 +48,35 @@
                 });
             }
 
+            document.getElementById('btnConcill').addEventListener('click', function() {
+                // Obtenha os checkboxes marcados
+                var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+                var confirmados = Array.from(checkboxes).map(checkbox => checkbox.value);
+                console.log(confirmados)
+                console.log(checkboxes)
+                // Faça uma requisição AJAX para a rota d  e conciliação
+                fetch('/conciliar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'confirmado=' + confirmados.join('&'),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        // Atualize a página ou realize outras ações necessárias
+                        window.location.reload();
+                    } else {
+                        alert('Erro ao conciliar: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro na requisição AJAX:', error);
+                });
+            });
+
             // Chama a função ao carregar a página
             removerTextoRI();
             replacePontoVirgula();
@@ -55,12 +84,15 @@
     </script>
 </head>
 <body>
-    <div class="container">
-        <a href=" {{ url_for('index') }} " class="a"> <!-- Link retornará à pagina index -->
-            <button type="submit" class="btnAction">
-                <img src="/static/assets/images/pages/return/left-arrow.png" alt="Seta Retorno" class="icon">
+    <div class="buttonReturn">
+        <a href=" {{ url_for('index') }} "> <!-- Link retornará à pagina index -->
+            <button type="button" class="btnReturn">
+                <img src="/static/assets/images/pages/return/left-arrow.png" alt="Seta Retorno" class="returnImage">
             </button>
         </a>
+    </div>
+    <div class="buttonConcill">
+            <button type="button" class="btnConcill" id="btnConcill">Conciliar</button>
     </div>
     <div class="container">
         <h1>Resultados da Conciliação</h1>

@@ -47,6 +47,83 @@ button:hover {
     background-color: #950031;
 }
 
+.btnReturn {
+    background-color: rgba(255, 255, 255, 0);
+    border-radius: 100%;
+    cursor: pointer;
+    font-size: inherit; /* Mantenha o tamanho de fonte padrão */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 50px;
+    height: 50px;
+    padding: 5px;
+    margin: 0, auto;
+    margin-top: 0px;
+    margin-left: 470px;
+    position:relative;
+    float: left;
+    transition: filter 0.3s ease-in-out; /* Adicione transição para o filtro do ícone */
+}
+
+/* Remova a regra de hover do ícone do botão e adicione ao botão principal */
+.btnReturn:hover {
+    background-color: rgb(199, 0, 57);
+    transition: filter 0.3s ease-in-out; /* Adicione transição para o filtro do ícone */
+
+}
+
+.btnReturn .returnImage {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0);
+}
+
+.btnReturn:hover .returnImage {
+    filter: invert(100%);
+}
+
+.btnConcill {
+    background-color: rgb(199, 0, 57);
+    color: #fff;
+    padding: 5px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: inherit; /* Mantenha o tamanho de fonte padrão */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 90px;
+    height: 50px;
+    margin: 0 auto;
+    margin-right: 575px;
+    position: relative;
+    float: right;
+    transition: background-color 0.2s ease-in-out; /* Adicione transição para background-color */
+}
+
+
+/* Ajuste de margens para diferentes tamanhos de tela */
+@media (min-width: 768px) {
+    .btnReturn,
+    .btnConcill {
+        width: auto;
+    }
+
+    .buttonReturn,
+    .buttonConcill {
+        display:-ms-flexbox;
+    }
+}
+
+/* Remova a regra de hover do ícone do botão e adicione ao botão principal */
+.btnConcill:hover {
+    background-color: #950031;
+}
+
 /* Estilo para lista de resultados */
 .result-list {
     list-style-type: none;
@@ -85,8 +162,6 @@ th, td {
     align-items: center;
     justify-content: center;
     text-align: center;
-    white-space: nowrap; /* Impede a quebra de linha dentro da célula */
-    word-break: break-all; /* Quebra a palavra quando passar da largura da célula */
 }
 
 td {
@@ -104,31 +179,3 @@ th {
     background-color: #f2f2f2;
 }
 
-.btnAction {
-    background-color: rgba(255, 255, 255, 0);
-    border-radius: 100%;
-    cursor: pointer;
-    font-size: inherit; /* Mantenha o tamanho de fonte padrão */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 50px;
-    height: 50px;
-    transition: background-color 0.3s ease-in-out; /* Adicione transição para background-color */
-}
-
-/* Remova a regra de hover do ícone do botão e adicione ao botão principal */
-.btnAction:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
-.btnAction .icon {
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0);
-    transition: filter 0.3s ease-in-out; /* Adicione transição para o filtro do ícone */
-}
-
-.btnAction:hover .icon {
-    filter: invert(100%);
-}
