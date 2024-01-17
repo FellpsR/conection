@@ -54,13 +54,15 @@
                 var confirmados = Array.from(checkboxes).map(checkbox => checkbox.value);
                 console.log(confirmados)
                 console.log(checkboxes)
-                // Faça uma requisição AJAX para a rota d  e conciliação
+                
+                // Faça uma requisição AJAX para a rota de conciliação
                 fetch('/conciliar', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
-                    body: 'confirmado=' + confirmados.join('&'),
+                    body: JSON.stringify({ confirmados: confirmados }) // Envolva os dados em um objeto
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -73,7 +75,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Erro na requisição AJAX:', error);
+                    console.error('Erro na requisição POST:', error);
                 });
             });
 
@@ -125,7 +127,7 @@
                         <td>R$ {{ coluna[6] }}</td>
                         <td>R$ {{ coluna[7] }}</td>
                         <td>
-                            <input class="quebra_linha" type="checkbox" {% if coluna[9] %}checked{% endif %}>
+                            <input class="quebra_linha" type="checkbox" value="{{ coluna[1] }}" {% if coluna[9] %}checked{% endif %}>
                         </td>
                         <!-- Adicione mais colunas conforme necessário -->
                     </tr>

@@ -10,6 +10,7 @@ import psycopg2
 import os
 import pandas as pd
 import uuid
+import logging
 
 app = Flask(__name__)
 
@@ -216,36 +217,39 @@ def lista_arquivos_com_extensao_e_datas(diretorio, extensao, data_inicio, data_f
 @app.route("/conciliar", methods=["POST"])
 def conciliar():
     try:
-        #Obtenha os dados da tabela resultados a serem conciliados
-        confirmados = request.form.getlist("confirmado[]")
-
+        # Obtenha os dados da tabela resultados a serem conciliados
+        confirmados = request.get_json().get('confirmados', [])
+        print(confirmados)
+        print("teste")
         print(confirmados)
 
-        #Conecta ao Banco de Dados
+        # Conecta ao Banco de Dados
         conn = psycopg2.connect(config("DATABASE_ONR"))
         cursor = conn.cursor()
 
+
         for confirmado in confirmados:
-            #Consulta campos no Banco de dados Finance
+            # Consulta campos no Banco de dados Finance
             query_onr = "SELECT * FROM protocolo_onr WHERE confirmado = %s"
             cursor.execute(query_onr, (confirmado,))
             protocolo_conciliado = cursor.fetchone()
 
             if protocolo_conciliado:
-                #Insere os dados na tabela do Asgard
-                query_asgard = "UPDATE protocolo_asgard SET confirmado = %s WHERE True = %s"
-                values_asgard = (True)
+                # Insere os dados na tabela do Asgard
+                query_asgard = "UPDATE protocolo_asgard SET confirmado = %s WHERE protocolo = %s"
+                values_asgard = (True, protocolo_conciliado[5])
 
                 cursor.execute(query_asgard, values_asgard)
 
-                #Insere os dados na tabela do ONR
-                query_onr = "UPDATE protocolo_onr SET confirmado = %s WHERE True = %s"
-                values_onr = (True)
+                # Insere os dados na tabela do ONR
+                query_onr = "UPDATE protocolo_onr SET confirmado = %s WHERE protocolo_saec = %s"
+                values_onr = (True, protocolo_conciliado[5])
 
                 cursor.execute(query_onr, values_onr)
 
-        #Commita as mudanças no Banco de Dados
+        # Commita as mudanças no Banco de Dados
         conn.commit()
+
 
         return jsonify({"success": True, "message": "Conciliação realizada com sucesso."})
     except Exception as e:
