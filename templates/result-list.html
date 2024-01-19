@@ -48,13 +48,69 @@
                 });
             }
 
-            document.getElementById('btnConcill').addEventListener('click', function() {
-                // Obtenha os checkboxes marcados
-                var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-                var confirmados = Array.from(checkboxes).map(checkbox => checkbox.value);
-                console.log(confirmados)
-                console.log(checkboxes)
+            // document.getElementById('btnConcill').addEventListener('click', function() {
+            //     // Obtenha os checkboxes marcados
+            //     var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            //     var confirmados = Array.from(checkboxes).map(checkbox => checkbox.value);
+            //     console.log(confirmados)
+            //     console.log(checkboxes)
                 
+            //     // Faça uma requisição AJAX para a rota de conciliação
+            //     fetch('/conciliar', {
+            //         method: 'POST',
+            //         headers: {
+            //             'Content-Type': 'application/json',
+            //             'Accept': 'application/json'
+            //         },
+            //         body: JSON.stringify({ confirmados: confirmados }) // Envolva os dados em um objeto
+            //     })
+            //     .then(response => response.json())
+            //     .then(data => {
+            //         if (data.success) {
+            //             alert(data.message);
+            //             // Atualize a página ou realize outras ações necessárias
+            //             window.location.reload();
+            //         } else {
+            //             alert('Erro ao conciliar: ' + data.message);
+            //         }
+            //     })
+            //     .catch(error => {
+            //         console.error('Erro na requisição POST:', error);
+            //     });
+            // });
+
+            document.getElementById('btnConcill').addEventListener('click', function() {
+                // Obtenha todos os checkboxes marcados
+                var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+
+                // Crie um array para armazenar informações de todas as colunas dos checkboxes marcados
+                var dadosConfirmados = Array.from(checkboxes).map(checkbox => {
+                    // Acesse a linha pai do checkbox
+                    var row = checkbox.closest('tr');
+
+                    // Extraia informações específicas de cada coluna da tabela
+                    var protocolo = row.cells[0].innerText;
+                    var tipo = row.cells[1].innerText;
+                    var status = row.cells[2].innerText;
+                    var cadastro = row.cells[3].innerText;
+                    var numeroSaec = row.cells[4].innerText;
+                    var valorTotal = row.cells[5].innerText;
+                    var saldo = row.cells[6].innerText;
+
+                    return {
+                        protocolo: protocolo,
+                        tipo: tipo,
+                        status: status,
+                        cadastro: cadastro,
+                        numeroSaec: numeroSaec,
+                        valorTotal: valorTotal,
+                        saldo: saldo,
+                        confirmado: checkbox.value
+                    };
+                });
+
+                console.log(dadosConfirmados);
+
                 // Faça uma requisição AJAX para a rota de conciliação
                 fetch('/conciliar', {
                     method: 'POST',
@@ -62,7 +118,7 @@
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ confirmados: confirmados }) // Envolva os dados em um objeto
+                    body: JSON.stringify({ confirmados: dadosConfirmados }) // Envolva os dados em um objeto
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -78,6 +134,8 @@
                     console.error('Erro na requisição POST:', error);
                 });
             });
+
+
 
             // Chama a função ao carregar a página
             removerTextoRI();

@@ -51,6 +51,7 @@ $ pip install psycopg2
 $ pip install alembic
 $ pip install pandas
 $ pip install python-dotenv
+$ pip install xlrd #para inserir data
 
 # Crie a base finance no SGBD de escolha, no caso é o PostgreSQL:
 $ sudo -u postgres psql postgres

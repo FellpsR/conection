@@ -219,31 +219,30 @@ def conciliar():
     try:
         # Obtenha os dados da tabela resultados a serem conciliados
         confirmados = request.get_json().get('confirmados', [])
-        print(confirmados)
-        print("teste")
-        print(confirmados)
+        # print(confirmados)
+        # print("teste")
+        # print(confirmados)
 
         # Conecta ao Banco de Dados
         conn = psycopg2.connect(config("DATABASE_ONR"))
         cursor = conn.cursor()
 
-
         for confirmado in confirmados:
             # Consulta campos no Banco de dados Finance
-            query_onr = "SELECT * FROM protocolo_onr WHERE confirmado = %s"
-            cursor.execute(query_onr, (confirmado,))
+            query_onr = "SELECT * FROM protocolo_onr WHERE protocolo_saec = %s"
+            cursor.execute(query_onr, (confirmado["numeroSaec"],))
             protocolo_conciliado = cursor.fetchone()
 
             if protocolo_conciliado:
                 # Insere os dados na tabela do Asgard
-                query_asgard = "UPDATE protocolo_asgard SET confirmado = %s WHERE protocolo = %s"
-                values_asgard = (True, protocolo_conciliado[5])
+                query_asgard = "UPDATE protocolo_asgard SET confirmado = %s WHERE saec = %s"
+                values_asgard = (True, confirmado["numeroSaec"])
 
                 cursor.execute(query_asgard, values_asgard)
 
                 # Insere os dados na tabela do ONR
                 query_onr = "UPDATE protocolo_onr SET confirmado = %s WHERE protocolo_saec = %s"
-                values_onr = (True, protocolo_conciliado[5])
+                values_onr = (True, confirmado["numeroSaec"])
 
                 cursor.execute(query_onr, values_onr)
 
