@@ -166,7 +166,9 @@
                     <th>Cadastro</th>
                     <th>Nº SAEC</th>
                     <th>Valor Total</th>
-                    <th>Saldo</th>
+                    <th>Saldo Asgard</th>
+                    <th>Valor SAEC</th>
+                    <th>SALDO Geral</th>
                     <th>
                         Confirmado?
                         <input type="button" value="✅" id="select-all">
@@ -184,8 +186,10 @@
                         <td>{{ coluna[5] }}</td>
                         <td>R$ {{ coluna[6] }}</td>
                         <td>R$ {{ coluna[7] }}</td>
+                        <td>R$ {{ coluna[8] }}</td>
+                        <td>R$ {{ coluna[9] }}</td>
                         <td>
-                            <input class="quebra_linha" type="checkbox" value="{{ coluna[1] }}" {% if coluna[9] %}checked{% endif %}>
+                            <input class="quebra_linha" type="checkbox" value="{{ coluna[1] }}" {% if coluna[10] %}checked{% endif %}>
                         </td>
                         <!-- Adicione mais colunas conforme necessário -->
                     </tr>

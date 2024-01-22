@@ -229,9 +229,11 @@ def conciliar():
 
         for confirmado in confirmados:
             # Consulta campos no Banco de dados Finance
+            print(confirmado["numeroSaec"])
             query_onr = "SELECT * FROM protocolo_onr WHERE protocolo_saec = %s"
             cursor.execute(query_onr, (confirmado["numeroSaec"],))
             protocolo_conciliado = cursor.fetchone()
+
 
             if protocolo_conciliado:
                 # Insere os dados na tabela do Asgard
